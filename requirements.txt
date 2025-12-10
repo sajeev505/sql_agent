@@ -1,0 +1,13 @@
+openai
+langchain
+llama-index
+crewai
+chromadb
+pymysql
+sqlalchemy
+python-dotenv
+fastapi
+uvicorn
+streamlit
+sqlparse
+requests
