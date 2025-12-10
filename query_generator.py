@@ -3,6 +3,7 @@ import re
 import json
 import time
 import google.generativeai as genai
+import openai
 import sqlparse
 from dotenv import load_dotenv
 from sqlalchemy import text
@@ -12,6 +13,9 @@ load_dotenv()
 
 # Configure Gemini API
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+
+# Configure OpenAI API
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 # Rate limiting configuration
 last_api_call_time = 0
@@ -38,7 +42,7 @@ def fetch_limited_schema(database_name, max_tables=5, max_columns=5):
 
 def generate_sql_query(natural_query, database_name, model="gemini-2.5-pro"):
     """
-    Generates an SQL query from natural language using Google Gemini.
+    Generates an SQL query from natural language using Google Gemini or OpenAI.
     Rate limited to 1 call per 60 seconds.
     """
     global last_api_call_time
@@ -67,10 +71,22 @@ def generate_sql_query(natural_query, database_name, model="gemini-2.5-pro"):
     """
     
     try:
-        # Use the selected model
-        gen_model = genai.GenerativeModel(model)
-        response = gen_model.generate_content(prompt)
-        sql_query = response.text
+        if model.startswith("gpt"):
+            # Use OpenAI
+            response = openai.chat.completions.create(
+                model=model,
+                messages=[
+                    {"role": "system", "content": "You are a helpful SQL assistant."},
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=0
+            )
+            sql_query = response.choices[0].message.content
+        else:
+            # Use Gemini
+            gen_model = genai.GenerativeModel(model)
+            response = gen_model.generate_content(prompt)
+            sql_query = response.text
         
         # Update last API call time after successful call
         last_api_call_time = time.time()

@@ -68,7 +68,7 @@ if selected_table and selected_db:
 st.sidebar.header("AI Model")
 selected_model = st.sidebar.selectbox(
     "Select Model",
-    ["gemini-2.5-pro", "gemini-2.5-flash"],
+    ["gemini-2.5-pro", "gemini-2.5-flash", "gpt-3.5-turbo"],
     index=0
 )
 
