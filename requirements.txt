@@ -1,8 +1,4 @@
-openai
-langchain
-llama-index
-crewai
-chromadb
+google-generativeai
 pymysql
 sqlalchemy
 python-dotenv

@@ -64,6 +64,14 @@ if selected_table and selected_db:
         except Exception as e:
             st.sidebar.error(f"Error: {e}")
 
+# --- Sidebar: Model Selection ---
+st.sidebar.header("AI Model")
+selected_model = st.sidebar.selectbox(
+    "Select Model",
+    ["gemini-2.5-pro", "gemini-2.5-flash"],
+    index=0
+)
+
 # --- Main Area: Query Generator ---
 
 st.subheader("Generate SQL Query")
@@ -73,7 +81,11 @@ natural_query = st.text_area("Enter your question in plain English:", height=100
 
 if st.button("Generate SQL"):
     if natural_query and selected_db:
-        payload = {"natural_query": natural_query, "database_name": selected_db}
+        payload = {
+            "natural_query": natural_query, 
+            "database_name": selected_db,
+            "model": selected_model
+        }
         try:
             response = requests.post(f"{API_URL}/generate_sql", json=payload)
             if response.status_code == 200:
@@ -81,7 +93,8 @@ if st.button("Generate SQL"):
                 st.session_state["generated_sql"] = generated_sql
                 st.success("SQL Query Generated!")
             else:
-                st.error(f"Error: {response.text}")
+                error_detail = response.json().get("detail", response.text)
+                st.error(f"Error: {error_detail}")
         except Exception as e:
             st.error(f"Connection Error: {e}")
     else:

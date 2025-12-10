@@ -1,6 +1,6 @@
 # AI Powered SQL Query Generator
 
-An intelligent application that converts natural language questions into SQL queries using OpenAI's GPT models, with a FastAPI backend and Streamlit frontend.
+An intelligent application that converts natural language questions into SQL queries using Google's Gemini AI, with a FastAPI backend and Streamlit frontend.
 
 ## 🚀 Features
 
@@ -16,7 +16,7 @@ SQL_agent/
 ├── requirements.txt      # Python dependencies
 ├── .env                  # Environment variables (credentials)
 ├── database.py           # Database connection & schema retrieval
-├── query_generator.py    # OpenAI integration & SQL generation
+├── query_generator.py    # Gemini AI integration & SQL generation
 ├── app.py                # FastAPI backend (REST API)
 ├── ui.py                 # Streamlit frontend (UI)
 └── README.md             # This file
@@ -26,7 +26,7 @@ SQL_agent/
 
 - Python 3.8+
 - MySQL Server running locally
-- OpenAI API Key
+- Gemini API Key (get from [AI Studio](https://aistudio.google.com/apikey))
 
 ## 📦 Installation
 
@@ -44,7 +44,7 @@ SQL_agent/
    MYSQL_PASSWORD=your_password
    MYSQL_DATABASE=your_database
    MYSQL_PORT=3306
-   OPENAI_API_KEY=sk-proj-your-actual-api-key-here
+   GEMINI_API_KEY=your-gemini-api-key-here
    ```
 
 ## ▶️ How to Run
@@ -86,8 +86,8 @@ SQL_agent/
 ## ⚠️ Important Notes
 
 - Ensure your MySQL server is running before starting the application
-- Keep your OpenAI API key secure and never commit it to version control
-- The application uses GPT-4 by default; you can change to `gpt-3.5-turbo` in `query_generator.py` for lower costs
+- Keep your Gemini API key secure and never commit it to version control
+- The application uses Gemini 2.5 Pro for high-quality SQL generation
 
 ## 📄 License
 

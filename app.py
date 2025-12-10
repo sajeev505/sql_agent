@@ -16,6 +16,7 @@ logging.basicConfig(level=logging.DEBUG)
 class QueryRequest(BaseModel):
     natural_query: str
     database_name: str
+    model: str = "gemini-2.5-pro"
 
 class ExecuteRequest(BaseModel):
     sql_query: str
@@ -61,8 +62,8 @@ def get_columns(database_name: str, table_name: str):
 @app.post("/generate_sql")
 def generate_sql_endpoint(request: QueryRequest):
     """Endpoint to generate SQL from natural language."""
-    sql = generate_sql_query(request.natural_query, request.database_name)
-    if "Error" in sql:
+    sql = generate_sql_query(request.natural_query, request.database_name, request.model)
+    if "Error" in sql or "Rate limited" in sql:
          raise HTTPException(status_code=400, detail=sql)
     return {"sql_query": sql}
 

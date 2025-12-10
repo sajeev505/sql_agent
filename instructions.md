@@ -12,7 +12,7 @@ Open a terminal in the project directory and run:
 pip install -r requirements.txt
 ```
 
-This installs all required packages including FastAPI, Streamlit, OpenAI, SQLAlchemy, etc.
+This installs all required packages including FastAPI, Streamlit, Gemini SDK, SQLAlchemy, etc.
 
 ---
 
@@ -48,19 +48,19 @@ MYSQL_PASSWORD=YOUR_MYSQL_PASSWORD    # ← Replace with your MySQL password
 MYSQL_DATABASE=test_db                 # ← Replace with your database name
 MYSQL_PORT=3306
 
-# OpenAI API Key
-OPENAI_API_KEY=sk-proj-xxxxxxxxxxxxx  # ← Replace with your actual API key
+# Gemini API Key
+GEMINI_API_KEY=your-gemini-api-key    # ← Replace with your actual API key
 ```
 
 ---
 
-## Step 4: Get Your OpenAI API Key
+## Step 4: Get Your Gemini API Key
 
-1. Go to **https://platform.openai.com/api-keys**
-2. Sign in or create an account
-3. Click **"Create new secret key"**
-4. Copy the key (it starts with `sk-proj-...` or `sk-...`)
-5. Paste it in the `.env` file as the value for `OPENAI_API_KEY`
+1. Go to **https://aistudio.google.com/apikey**
+2. Sign in with your Google account
+3. Click **"Create API Key"**
+4. Copy the key
+5. Paste it in the `.env` file as the value for `GEMINI_API_KEY`
 
 > ⚠️ **Important**: Never share your API key publicly or commit it to version control!
 
@@ -121,9 +121,10 @@ Your browser will automatically open to `http://localhost:8501`
 - Verify your MySQL credentials in `.env`
 - Ensure MySQL service is started
 
-### OpenAI API Errors
-- Check that your API key is valid and has available credits
+### Gemini API Errors
+- Check that your API key is valid
 - Ensure the key is correctly pasted without extra spaces
+- Verify you have access to the Gemini API
 
 ### Import Errors
 - Run `pip install -r requirements.txt` again
@@ -138,7 +139,7 @@ Your browser will automatically open to `http://localhost:8501`
 | `.env` | **← PUT YOUR API KEY HERE** |
 | `requirements.txt` | Python dependencies |
 | `database.py` | Database connection logic |
-| `query_generator.py` | OpenAI integration |
+| `query_generator.py` | Gemini AI integration |
 | `app.py` | FastAPI backend |
 | `ui.py` | Streamlit frontend |
 
@@ -146,6 +147,6 @@ Your browser will automatically open to `http://localhost:8501`
 
 ## 💡 Tips
 
-- Use **GPT-3.5-Turbo** instead of GPT-4 for faster, cheaper queries (edit `query_generator.py`, line ~51)
+- The Gemini 2.5 Pro model provides high-quality SQL generation
 - Add more tables to your database for better testing
 - The schema fetcher limits to 5 tables/columns by default to avoid token limits

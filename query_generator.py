@@ -1,7 +1,8 @@
 import os
 import re
 import json
-import openai
+import time
+import google.generativeai as genai
 import sqlparse
 from dotenv import load_dotenv
 from sqlalchemy import text
@@ -9,8 +10,12 @@ from database import engine, list_tables, list_columns
 
 load_dotenv()
 
-# Set OpenAI API Key
-openai.api_key = os.getenv("OPENAI_API_KEY")
+# Configure Gemini API
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+
+# Rate limiting configuration
+last_api_call_time = 0
+RATE_LIMIT_SECONDS = 60
 
 def clean_sql_query(response_text):
     """Removes markdown and cleans the SQL query."""
@@ -20,7 +25,7 @@ def clean_sql_query(response_text):
 
 def fetch_limited_schema(database_name, max_tables=5, max_columns=5):
     """
-    Fetches a limited schema to avoid hitting OpenAI token limits.
+    Fetches a limited schema to avoid hitting API token limits.
     """
     schema_summary = {}
     tables = list_tables(database_name)[:max_tables]
@@ -31,10 +36,20 @@ def fetch_limited_schema(database_name, max_tables=5, max_columns=5):
         
     return schema_summary
 
-def generate_sql_query(natural_query, database_name):
+def generate_sql_query(natural_query, database_name, model="gemini-2.5-pro"):
     """
-    Generates an SQL query from natural language using OpenAI.
+    Generates an SQL query from natural language using Google Gemini.
+    Rate limited to 1 call per 60 seconds.
     """
+    global last_api_call_time
+    
+    # Rate limiting check
+    current_time = time.time()
+    elapsed = current_time - last_api_call_time
+    if last_api_call_time > 0 and elapsed < RATE_LIMIT_SECONDS:
+        wait_time = int(RATE_LIMIT_SECONDS - elapsed)
+        return f"Rate limited. Please wait {wait_time} seconds before making another request."
+    
     schema = fetch_limited_schema(database_name)
     
     prompt = f"""
@@ -52,16 +67,14 @@ def generate_sql_query(natural_query, database_name):
     """
     
     try:
-        response = openai.chat.completions.create(
-            model="gpt-3.5-turbo",  # Options: gpt-3.5-turbo, gpt-4, gpt-4-turbo
-            messages=[
-                {"role": "system", "content": "You are a helpful SQL assistant."},
-                {"role": "user", "content": prompt}
-            ],
-            temperature=0
-        )
+        # Use the selected model
+        gen_model = genai.GenerativeModel(model)
+        response = gen_model.generate_content(prompt)
+        sql_query = response.text
         
-        sql_query = response.choices[0].message.content
+        # Update last API call time after successful call
+        last_api_call_time = time.time()
+        
         return clean_sql_query(sql_query)
         
     except Exception as e:
